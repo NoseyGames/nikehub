@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  body {
+    margin: 0;
+    background-color: #0a0a0a;
+    background-image: 
+      linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+    
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: #ffffff;
+    overflow: hidden;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(0,0,0,0.5);
+  }
+
+  p {
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 10px 0 30px 0;
+  }
+
+  .copy-box-container {
+    position: relative;
+    width: 90%;
+    max-width: 850px;
+    height: 60vh;
+    background: rgba(255, 255, 255, 0.01); 
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ffffff;
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 800;
+    font-size: 0.7rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    z-index: 5;
+    transition: transform 0.1s;
+  }
+
+  .copy-btn:active {
+    transform: scale(0.95);
+  }
+
+  textarea {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    padding: 25px;
+    padding-top: 60px;
+    color: #ffffff;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    box-sizing: border-box;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  }
+
+  textarea::-webkit-scrollbar {
+    width: 4px;
+  }
+  textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
+</style>
+</head>
+<body>
+
+    <h1>Edpuzzle Video Skip</h1>
+    <p>Paste this as a link or, if possible put it as a bookmarklet.</p>
+
+    <div class="copy-box-container">
+      <button class="copy-btn" onclick="copyText()">Copy All</button>
+      <textarea id="copyArea" readonly>javascript:(function() { function httpGet(url, callback, headers = [], method = "GET", content = null) { const request = new XMLHttpRequest(); request.addEventListener("load", callback); request.open(method, url, true); headers.forEach((header) => request.setRequestHeader(header[0], header[1])); request.send(content); } function getAssignment() { const assignmentId = window.location.pathname.split("/")[2]; const url = `https://edpuzzle.com/api/v4/assignments/${assignmentId}/play`; const headers = [ ["accept", "application/json, text/plain, */*"], ["accept_language", "en-US,en;q=0.9"], ["content-type", "application/json"], ["referer", window.location.href], ]; httpGet(url, function() { const data = JSON.parse(this.responseText); const attemptId = data.mediaAttempt._id; postAttempt(attemptId); }, headers); } function postAttempt(attemptId) { const url = `https://edpuzzle.com/api/v4/media_attempts/${attemptId}/watch`; const content = { "timeIntervalNumber": 10 }; const headers = [ ["accept", "application/json, text/plain, */*"], ["accept_language", "en-US,en;q=0.9"], ["content-type", "application/json"], ["referer", window.location.href], ]; httpGet(url, function() { window.location.reload(); }, headers, "POST", JSON.stringify(content)); } getAssignment(); })();
+</textarea>
+    </div>
+
+<script>
+  function copyText() {
+    const text = document.getElementById("copyArea");
+    text.select();
+    navigator.clipboard.writeText(text.value);
+    
+    const btn = document.querySelector('.copy-btn');
+    btn.innerHTML = "Copied";
+    setTimeout(() => { btn.innerHTML = "Copy All"; }, 2000);
+  }
+</script>
+
+</body>
+</html>

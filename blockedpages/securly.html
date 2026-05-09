@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Blocked Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.securly.com/app/css/login-layouts.css">
+    <link rel="stylesheet" href="https://www.securly.com/app/css/blocked.css">
+    <style>
+        /* This keeps the layout clean but removes the red/blue squiggly lines */
+        [contenteditable="true"] {
+            outline: none !important;
+            border: 1px solid transparent; /* Keeps things from jumping */
+            transition: border 0.2s ease;
+        }
+
+        /* This adds the 'box line' back only when you are actually editing */
+        [contenteditable="true"]:focus {
+            border: 1px solid #0073E6 !important;
+            background-color: #f0f7ff;
+            border-radius: 4px;
+            padding: 0 4px;
+        }
+
+        .top-logo img {
+            width: 100px;
+            height: 70px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="blocked-page businessbg">
+            <div class="padding-wrapper">
+                <div class="newGrid_container shadow-container">
+                    <div class="row">
+                        <div class="top-logo"> 
+                            <img src="/images/blockers/securly.png" alt="Logo"> 
+                        </div>
+                        <h1 class="text-center heading">Looks like this page isn't allowed</h1>
+                        <div class="schlblockMessage mt-0 text-center">This page has been blocked.</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-7 text-center">
+                            <div class="lhs-img-container">
+                                <img src="https://www.securly.com/app/images/blocking-animation.gif" alt="Blocking animation">
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <section class="rhs-container">
+                                <div id="blockDetails" class="block-details">
+                                    <h2 class="details-heading">Blocking details</h2>
+                                    
+                                    <div class="regularBody">
+                                        <span>URL: </span>
+                                        <span class="medium" contenteditable="true" spellcheck="false">ixl.com</span>
+                                    </div>
+                                    <div class="regularBody">
+                                        <span>Reason: </span>
+                                        <span class="medium" contenteditable="true" spellcheck="false">Education Material</span>
+                                    </div>
+
+                                    <div id="additional-details" style="display: block; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+                                        <div class="details"><span>Policy: </span><span contenteditable="true" spellcheck="false">Base/Default Policy</span></div>
+                                        <div class="details"><span>Date and time: </span><span id="current-date" contenteditable="true" spellcheck="false"></span></div>
+                                        <div class="details"><span>External IP: </span><span contenteditable="true" spellcheck="false">your NOT getting my ip.</span></div>
+                                        <div class="details"><span>Filtering methods: </span><span>DNS</span></div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Real-time clock to match the current moment
+        const now = new Date();
+        const options = { weekday: 'long', year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'short' };
+        document.getElementById('current-date').innerText = now.toLocaleString('en-US', options).replace(',', '');
+
+        // Prevent Enter key from breaking the layout
+        document.querySelectorAll('[contenteditable="true"]').forEach(field => {
+            field.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    field.blur();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

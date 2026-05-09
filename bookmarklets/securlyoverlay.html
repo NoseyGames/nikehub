@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  body {
+    margin: 0;
+    background-color: #0a0a0a;
+    background-image: 
+      linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+    
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: #ffffff;
+    overflow: hidden;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(0,0,0,0.5);
+  }
+
+  p {
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 10px 0 30px 0;
+  }
+
+  .copy-box-container {
+    position: relative;
+    width: 90%;
+    max-width: 850px;
+    height: 60vh;
+    background: rgba(255, 255, 255, 0.01); 
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ffffff;
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 800;
+    font-size: 0.7rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    z-index: 5;
+    transition: transform 0.1s;
+  }
+
+  .copy-btn:active {
+    transform: scale(0.95);
+  }
+
+  textarea {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    padding: 25px;
+    padding-top: 60px;
+    color: #ffffff;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    box-sizing: border-box;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  }
+
+  textarea::-webkit-scrollbar {
+    width: 4px;
+  }
+  textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
+</style>
+</head>
+<body>
+
+    <h1>Securly Overlay Hang Bypass</h1>
+    <p>Put this as a bookmarklet.</p>
+
+    <div class="copy-box-container">
+      <button class="copy-btn" onclick="copyText()">Copy All</button>
+      <textarea id="copyArea" readonly>javascript:(function(){const s=document.querySelectorAll('[id^="securly"],[class^="securly"],#securly-overlay,.securly-ui-container');s.forEach(el=>el.remove());const b=document.body.style;const h=document.documentElement.style;b.setProperty('overflow','auto','important');b.setProperty('position','static','important');h.setProperty('overflow','auto','important');console.log('should have worked, https://nikehub.org');})();
+</textarea>
+    </div>
+
+<script>
+  function copyText() {
+    const text = document.getElementById("copyArea");
+    text.select();
+    navigator.clipboard.writeText(text.value);
+    
+    const btn = document.querySelector('.copy-btn');
+    btn.innerHTML = "Copied";
+    setTimeout(() => { btn.innerHTML = "Copy All"; }, 2000);
+  }
+</script>
+
+</body>
+</html>

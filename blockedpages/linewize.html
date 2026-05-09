@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Content Blocked by Linewize</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/images/blockers/linewize/style.css">
+
+  <link rel="icon" href="favicon.svg">
+
+  <script defer src="/images/blockers/linewize/main.a2608d10.js"></script>
+
+  <style>
+    [contenteditable="true"] {
+      outline: none;
+      border: 1px solid transparent;
+      transition: 0.2s;
+    }
+
+    [contenteditable="true"]:focus {
+      border: 1px solid #0073E6;
+      background: #f0f7ff;
+      border-radius: 4px;
+      padding: 0 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <div class="background">
+
+      <div class="header">
+        <img 
+          src="/images/blockers/linewize/logo.5d417081dd47af61a24749d8465151b7.svg"
+          class="logo"
+          alt="Linewize Logo"
+        >
+        <div class="logout"></div>
+      </div>
+
+      <div class="container">
+
+        <img 
+          src="/images/blockers/linewize/blocked.f8fa2d46551411441805475b62145389.svg"
+          alt="Blocked"
+        >
+
+        <h1 class="title">Content Blocked</h1>
+
+        <div class="subtitle">
+          Access to 
+          <span class="subtitleEmphasis" contenteditable="true" spellcheck="false">
+            example.com
+          </span> 
+          has been blocked
+        </div>
+
+        <div style="margin-top: 20px; text-align: left; max-width: 400px;">
+          <div>
+            <strong>Reason:</strong>
+            <span contenteditable="true" spellcheck="false">
+              Policy Violation
+            </span>
+          </div>
+
+          <div style="margin-top: 10px;">
+            <strong>Category:</strong>
+            <span contenteditable="true" spellcheck="false">
+              Restricted Content
+            </span>
+          </div>
+
+          <div style="margin-top: 10px;">
+            <strong>Date:</strong>
+            <span id="current-date" contenteditable="true" spellcheck="false"></span>
+          </div>
+        </div>
+
+        <a class="plainLink" href="/detail">
+          <div class="button button-light" style="margin-top: 16px;">
+            See why it's blocked
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const now = new Date();
+    document.getElementById("current-date").innerText =
+      now.toLocaleString();
+
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      el.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          el.blur();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
