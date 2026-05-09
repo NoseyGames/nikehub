@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MocOS</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.5.0/css/xterm.css"/>
+  <style>
+    :root {
+      --bg: url('/games/MocOS/images/background.webp');
+      --dock-bg: rgba(30,30,40,0.7);
+      --dock-border: rgba(255,255,255,0.1);
+      --window-bg: rgba(40,40,55,0.85);
+      --text: #f0f0f5;
+      --selection: rgba(0, 122, 255, 0.3);
+      --selection-border: rgba(0, 122, 255, 0.6);
+    }
+    [data-theme="light"] {
+      --dock-bg: rgba(240,240,245,0.75);
+      --window-bg: rgba(250,250,255,0.9);
+      --text: #1a1a2e;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; cursor: default; }
+    body {
+      height: 100vh;
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+      background: var(--bg) center/cover no-repeat fixed;
+      color: var(--text);
+      overflow: hidden;
+      user-select: none;
+    }
+    #selection-box {
+      position: absolute;
+      background: var(--selection);
+      border: 1px solid var(--selection-border);
+      display: none;
+      pointer-events: none;
+      z-index: 5;
+    }
+    #desktop { height: 100vh; position: relative; }
+    #dock-container {
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+      padding: 10px; z-index: 9999;
+    }
+    #dock {
+      background: var(--dock-bg);
+      backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--dock-border);
+      border-radius: 20px;
+      padding: 8px 12px;
+      display: flex; gap: 10px; align-items: flex-end;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .icon {
+      width: 50px; height: 50px;
+      background-size: contain; background-position: center; background-repeat:no-repeat;
+      transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+      border-radius: 12px; position: relative;
+    }
+    .icon:hover { transform: scale(1.2) translateY(-5px); cursor: pointer; }
+    .icon.active::after {
+      content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+      width: 4px; height: 4px; background: var(--text); border-radius: 50%;
+    }
+    .window {
+      position: absolute; width: 880px; height: 620px;
+      background: var(--window-bg);
+      backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+      overflow: hidden; display: none; z-index: 10;
+      opacity: 0; transform: scale(0.95);
+      transition: opacity 0.2s ease, transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      will-change: transform, opacity;
+    }
+    .window.open { display: block; opacity: 1; transform: scale(1); }
+    .window.minimized {
+      opacity: 0; transform: scale(0.1) translateY(800px); pointer-events: none;
+    }
+    .window.maximized { 
+      top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; 
+      border-radius: 0;
+    }
+    .titlebar { height: 38px; background: rgba(0,0,0,0.05); display: flex; align-items: center; padding: 0 12px; gap: 8px; }
+    .btn { width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; }
+    .close { background: #ff5f57; } .min { background: #febc2e; } .max { background: #28c840; }
+    .content { height: calc(100% - 38px); width: 100%; }
+    iframe { width:100%; height:100%; border:none; }
+    #terminal-container { width:100%; height:100%; background:#000; }
+  </style>
+</head>
+<body oncontextmenu="return false;">
+
+<div id="desktop">
+  <div id="selection-box"></div>
+  <div id="dock-container">
+    <div id="dock"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xterm@5.5.0/lib/xterm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.10.0/lib/xterm-addon-fit.js"></script>
+
+<script>
+const apps = [
+  { id: 'appstore', title: 'App Store', icon: '/games/MocOS/images/appstore.png', type: 'iframe', src: '/games/MocOS/appstore.html' },
+  { id: 'safari', title: 'Safari', icon: '/games/MocOS/safari.webp', type: 'iframe', src: 'https://my-presentation.pages.dev/' },
+  { id: 'vscode', title: 'Visual Studio Code', icon: '/games/MocOS/images/vscode-removebg-preview.png', type: 'iframe', src: '/games/MocOS/vscode.html' },
+  { id: 'games', title: 'NikeHub Games', icon: '/games/MocOS/images/favicon.png', type: 'iframe', src: '/games/MocOS/games.html' },
+];
+
+let term = null, fitAddon = null;
+const dock = document.getElementById('dock');
+const desktop = document.getElementById('desktop');
+const selectionBox = document.getElementById('selection-box');
+
+apps.forEach(app => {
+  const icon = document.createElement('div');
+  icon.className = 'icon';
+  icon.id = app.id;
+  icon.style.backgroundImage = `url('${app.icon}')`;
+  icon.onclick = (e) => { e.stopPropagation(); toggleWindow(app); };
+  dock.appendChild(icon);
+
+  const win = document.createElement('div');
+  win.className = 'window';
+  win.id = `win-${app.id}`;
+  win.style.top = '50px';
+  win.style.left = 'calc(50% - 440px)';
+  
+  win.innerHTML = `
+    <div class="titlebar" data-drag-handle ondblclick="toggleMax(this.closest('.window'))">
+      <div class="btn close" onclick="closeWin('win-${app.id}')"></div>
+      <div class="btn min" onclick="minimizeWin('win-${app.id}')"></div>
+      <div class="btn max" onclick="toggleMax(this.closest('.window'))"></div>
+      <div style="margin-left:8px; font-size:12px; font-weight:600; opacity:0.8;">${app.title}</div>
+    </div>
+    <div class="content">${app.type === 'terminal' ? '<div id="terminal-container"></div>' : 
+                         app.type === 'iframe' ? `<iframe src="${app.src}"></iframe>` : 
+                         app.content}</div>
+  `;
+  desktop.appendChild(win);
+});
+
+let startX, startY, isSelecting = false;
+desktop.addEventListener('mousedown', e => {
+  if (e.target !== desktop) return;
+  isSelecting = true;
+  startX = e.pageX;
+  startY = e.pageY;
+  selectionBox.style.left = startX + 'px';
+  selectionBox.style.top = startY + 'px';
+  selectionBox.style.width = '0px';
+  selectionBox.style.height = '0px';
+  selectionBox.style.display = 'block';
+});
+
+document.addEventListener('mousemove', e => {
+  if (!isSelecting) return;
+  const width = Math.abs(e.pageX - startX);
+  const height = Math.abs(e.pageY - startY);
+  selectionBox.style.left = (e.pageX < startX ? e.pageX : startX) + 'px';
+  selectionBox.style.top = (e.pageY < startY ? e.pageY : startY) + 'px';
+  selectionBox.style.width = width + 'px';
+  selectionBox.style.height = height + 'px';
+});
+
+document.addEventListener('mouseup', () => {
+  isSelecting = false;
+  selectionBox.style.display = 'none';
+});
+
+function toggleWindow(app) {
+  const win = document.getElementById(`win-${app.id}`);
+  if (win.classList.contains('minimized')) {
+    win.classList.remove('minimized');
+    bringToFront(win);
+  } else if (win.classList.contains('open')) {
+    minimizeWin(`win-${app.id}`);
+  } else {
+    win.style.display = 'block';
+    requestAnimationFrame(() => win.classList.add('open'));
+    bringToFront(win);
+    if (app.type === 'terminal' && !term) initTerminal();
+  }
+  updateDock();
+}
+
+function closeWin(id) {
+  const win = document.getElementById(id);
+  win.classList.remove('open', 'minimized');
+  setTimeout(() => win.style.display = 'none', 200);
+  updateDock();
+}
+
+function minimizeWin(id) {
+  const win = document.getElementById(id);
+  win.classList.add('minimized');
+  updateDock();
+}
+
+function updateDock() {
+  apps.forEach(app => {
+    const win = document.getElementById(`win-${app.id}`);
+    const icon = document.getElementById(app.id);
+    icon.classList.toggle('active', win.classList.contains('open') && !win.classList.contains('minimized'));
+  });
+}
+
+function toggleMax(win) {
+  win.classList.toggle('maximized');
+}
+
+let dragged = null, ox = 0, oy = 0;
+document.addEventListener('mousedown', e => {
+  const h = e.target.closest('[data-drag-handle]');
+  if (!h) return;
+  dragged = h.closest('.window');
+  bringToFront(dragged);
+  const r = dragged.getBoundingClientRect();
+  ox = e.clientX - r.left; oy = e.clientY - r.top;
+  dragged.style.transition = 'none';
+});
+
+document.addEventListener('mousemove', e => {
+  if (!dragged || dragged.classList.contains('maximized')) return;
+  dragged.style.left = (e.clientX - ox) + 'px';
+  dragged.style.top = (e.clientY - oy) + 'px';
+});
+
+document.addEventListener('mouseup', () => {
+  if (dragged) dragged.style.transition = '';
+  dragged = null;
+});
+
+function bringToFront(el) {
+  const ws = document.querySelectorAll('.window');
+  let mz = 10;
+  ws.forEach(w => { const z = parseInt(w.style.zIndex) || 10; if (z > mz) mz = z; });
+  el.style.zIndex = mz + 1;
+}
+
+function initTerminal() {
+  const termCont = document.getElementById('terminal-container');
+  term = new Terminal({ cursorBlink: true, fontSize: 13, theme: { background: '#000000dd' } });
+  fitAddon = new FitAddon.FitAddon();
+  term.loadAddon(fitAddon);
+  term.open(termCont);
+  fitAddon.fit();
+  term.write('\x1b[32muser@mock-os\x1b[0m:\x1b[34m~\x1b[0m$ ');
+  new ResizeObserver(() => fitAddon.fit()).observe(termCont);
+}
+</script>
+</body>
+</html>

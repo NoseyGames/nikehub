@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8" />
+    <title>Super Liquid Soccer - Offline</title>
+    <style>
+        html, body { background: #000; width: 100%; height: 100%; overflow: hidden; padding: 0; margin: 0; }
+        #gameContainer { position: absolute; width: 100%; height: 100%; display: none; }
+        #canvas { width: 100%; height: 100%; display: block; }
+
+        #file-merger-loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 16px;
+            z-index: 10000;
+            min-width: 300px;
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .loading-title { font-size: 18px; margin-bottom: 15px; }
+        .nike-link { 
+            font-size: 15px; 
+            color: #d42222; 
+            text-decoration: underline; 
+            margin-bottom: 10px; 
+            display: block; 
+            cursor: pointer;
+        }
+        .file-status { margin: 8px 0; }
+        .status-waiting { color: #888; }
+        .status-merging { color: #ffa500; }
+        .status-done { color: #00ff00; }
+    </style>
+</head>
+<body>
+
+    <div id="file-merger-loading">
+        <div class="loading-title">loading...</div>
+        <a href="https://nikehub.org" target="_blank" class="nike-link">nikehub</a>
+        <div id="file-status" class="file-status status-waiting">index.wasm: Waiting...</div>
+        <div id="file-status-pck" class="file-status status-waiting">index.pck: Waiting...</div>
+    </div>
+
+    <div id="gameContainer">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script src="index.js"></script>
+
+    <script>
+        const loadingDiv = document.getElementById("file-merger-loading");
+        const statusWasm = document.getElementById("file-status");
+        const statusPck = document.getElementById("file-status-pck");
+        const gameContainer = document.getElementById("gameContainer");
+
+        const engine = new Engine({
+            "args": [],
+            "canvasResizePolicy": 2,
+            "executable": "index",
+            "fpath": "index",
+            "pack": "index.pck",
+        });
+
+        engine.startGame({
+            onProgress: function (current, total) {
+                if (total > 0) {
+                    statusWasm.innerText = "index.wasm: merging... 1/1";
+                    statusWasm.className = "file-status status-merging";
+                    
+                    if (current / total > 0.5) {
+                        statusPck.innerText = "index.pck: merging... 1/1";
+                        statusPck.className = "file-status status-merging";
+                    }
+                }
+            }
+        }).then(() => {
+            statusWasm.innerText = "index.wasm: done";
+            statusWasm.className = "file-status status-done";
+            statusPck.innerText = "index.pck: done";
+            statusPck.className = "file-status status-done";
+
+            setTimeout(() => {
+                loadingDiv.style.opacity = "0";
+                setTimeout(() => {
+                    loadingDiv.remove();
+                    gameContainer.style.display = "block";
+                    window.focus();
+                }, 500);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
