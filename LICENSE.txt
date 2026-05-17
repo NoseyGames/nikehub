@@ -1,5 +1,95 @@
-Copyright © 2026 NikeHub. All Rights Reserved.
+license version 1.0
 
-This code has been granted to you by its owner
+Copyright Notice
 
-For licensing, contact @nikehub.org on TikTok or discord.gg/nikehub on discord!
+Copyright © 2026 NikeHub. All rights reserved.
+
+⸻
+
+1. Definitions
+
+“Software” refers to the source code, documentation, and associated files made available under this license.
+
+“Original Author” refers to nikegtag, the owner of NikeHub.
+
+“Derivative Work” refers to any modified version of the Software.
+
+⸻
+
+2. Permission Grant
+
+Permission is granted to any person obtaining a copy of the Software to use, copy, modify, merge, publish, distribute, and sublicense the Software, subject to the conditions of this license.
+
+⸻
+
+3. Attribution Requirement
+
+All copies or substantial portions of the Software must include:
+
+* The original copyright notice
+* A clear statement that the Software was originally created by NikeHub
+* A reference or link to the original source repository, if available
+
+Attribution must remain visible in both source and distributed forms.
+
+⸻
+
+4. No Claim of Authorship
+
+You may not:
+
+* Claim authorship of the original Software
+* Present the original Software, or any substantial portion of it, as your own work
+* Remove or obscure any notices identifying NikeHub as the Original Author
+
+This applies whether the Software is modified or unmodified.
+
+⸻
+
+5. Derivative Works
+
+You may create Derivative Works under the following conditions:
+
+* You must clearly indicate that changes were made
+* You must retain attribution to the Original Author (NikeHub)
+* You must not imply that the Original Author endorses or authored the Derivative Work
+
+⸻
+
+6. Redistribution
+
+Redistribution of the Software is permitted provided that this license is included unchanged and all attribution requirements are satisfied.
+
+⸻
+
+7. Commercial Use
+
+Commercial use is permitted only if all conditions of this license are met, including full attribution and compliance with the No Claim of Authorship clause.
+
+⸻
+
+8. Termination
+
+Any violation of this license automatically terminates your rights under it. Upon termination, you must cease all use and distribution of the Software and remove all copies where possible.
+
+⸻
+
+9. Enforcement
+
+Unauthorized use of the Software may result in:
+
+* DMCA takedown notices
+* Removal requests to hosting providers
+* Any other legal remedies available under applicable law
+
+⸻
+
+10. No Warranty
+
+The Software is provided “as is,” without warranty of any kind, express or implied, including but not limited to fitness for a particular purpose or non-infringement.
+
+⸻
+
+11. Acceptance
+
+By using, copying, or distributing the Software, you agree to be bound by the terms of this license
